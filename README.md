@@ -1,3 +1,3 @@
-# KHU-face Django backend
+# KHU-Face Django backend
 ### 구조
-![](img/tree.png)
+![](img/tree.jpg)
