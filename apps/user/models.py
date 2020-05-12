@@ -1,4 +1,5 @@
 from django.db import models
+from apps.khu_class.models import Khuclass
 
 # Create your models here.
 class User(models.Model):
@@ -16,6 +17,7 @@ class User(models.Model):
         abstract = True
 
 class Professor(User):
+    classes = models.ForeignKey(Khuclass, on_delete=models.CASCADE, related_name='classes')
     class Meta:
         db_table = 'professor'
 
