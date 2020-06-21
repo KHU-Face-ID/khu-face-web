@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from .models import Professor, Student, Khuclass
+from .models import Professor, Student, Lecture
 from .serializers import *
 from django.contrib import auth
 import json
@@ -11,6 +11,8 @@ from django.core.serializers import serialize
 from rest_framework.renderers import JSONRenderer
 from rest_framework import generics, serializers
 from rest_framework.response import Response
+
+import request
 
 class RegisterView(View):
     def get(self, request):
@@ -81,26 +83,35 @@ def logout(request):
     return redirect('/')
 
 class FrameView(View):
+    # def post(self, request):
+    #     ip=request.POST.get('ip')
+    #     URL='ip'+'/shot.jpg'
+    #     data={'ip':URL}
+    #     REQUEST_URL=''
+    #     request.post(REQUEST_URL, data=data)
+
     def get(self, request, class_id):
         '''
         input=>화면에서 인식되는 학생들의 id, location
         front=>location의 위치에 boxing, box에 id 데이터 저장
         '''
-        location_data={
-            1:{
-                'l1':13,
-                'l2':27,
-                'l3':20,
-                'l4':40
+        location_data=[
+            {
+                'id': '0', 
+                'x1': 235.2441840171814, 
+                'y1': 50.16988945007324, 
+                'x2': 283.1888146996498, 
+                'y2': 104.56735932826996
             },
-            2:{
-                'l1':37,
-                'l2':46,
-                'l3':30,
-                'l4':50
-            }
-        }
-        return JsonResponse(location_data, status=200)
+            {
+                'id': '1', 
+                'x1': 105.24182361364365, 
+                'y1': 195.83100248873234, 
+                'x2': 143.543091237545, 
+                'y2': 240.43386733531952
+            },
+        ]
+        return JsonResponse({'frame': location_data}, status=200)
 
     def post(self, request, class_id):
         '''
@@ -138,9 +149,9 @@ class FrameView(View):
         student_json = StudentSerialzer(student).data
         return JsonResponse(student_json)
 
-class ClassListView(generics.ListAPIView):
-    queryset = Khuclass.objects.all()
-    serializer_class = KhuclassSerializer
+class LectureListView(generics.ListAPIView):
+    queryset = Lecture.objects.all()
+    serializer_class = LectureSerializer
 
     def list(self, request):
         queryset = self.get_queryset()
@@ -156,3 +167,10 @@ class ClassListView(generics.ListAPIView):
 
 def camera(request):
     return render(request, "camera.html")
+
+class LectureIPView(generics.GenericAPIView):
+    def get(self, request, class_id):
+        lecture = Lecture.objects.get(pk=class_id)
+        
+    def post(self, request, class_id):
+        lecture = Lecture.objects.get(pk=class_id)

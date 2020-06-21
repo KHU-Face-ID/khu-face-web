@@ -1,40 +1,45 @@
 from django.db import models
 import jsonfield
 
-class User(models.Model):
+#Student
+class Student(models.Model):
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=100)
     name = models.CharField(max_length=20)
     department = models.CharField(max_length=30)
+    student_num = models.CharField(max_length=30)
     
     is_deleted = models.BooleanField(default=False)
     
     def __str__(self):
         return self.name
 
-    class Meta:
-        abstract = True
-
-#Student
-class Student(User):
-    student_num = models.CharField(max_length=30)
-
 #Class
-class Khuclass(models.Model):
-    class_name = models.CharField(max_length=50)
+class Lecture(models.Model):
+    lecture_name = models.CharField(max_length=50)
     credit = models.IntegerField()
     students = models.ManyToManyField('Student', blank=True)
+    ip = models.CharField(max_length=100, blank=True)
+    frame = jsonfield.JSONField()
 
     def __str__(self):
-        return self.class_name
-
+        return self.lecture_name
 
 #Professor
-class Professor(User):
-    classes = models.ManyToManyField('Khuclass', blank=True)
+class Professor(models.Model):
+    email = models.EmailField(max_length=100)
+    password = models.CharField(max_length=100)
+    name = models.CharField(max_length=20)
+    department = models.CharField(max_length=30)
+    lectures = models.ManyToManyField('Lecture', blank=True)
+    
+    is_deleted = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return self.name
 
 #TODO
 class Score(models.Model):
-    class_name = models.ForeignKey(Khuclass, on_delete=models.CASCADE)
+    lecture_name = models.ForeignKey(Lecture, on_delete=models.CASCADE)
     key = models.CharField(max_length=240)
-    value = jsonfield.JSONField()
+    value = models.CharField(max_length=10)

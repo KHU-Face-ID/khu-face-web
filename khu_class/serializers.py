@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from khu_class.models import Student, Professor, Khuclass
+from khu_class.models import Student, Professor, Lecture
 
 class StudentSerialzer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
@@ -22,12 +22,12 @@ class ProfessorSerializer(serializers.Serializer):
             model = Professor
             fields = ['id','name','department']
 
-class KhuclassSerializer(serializers.Serializer):
+class LectureSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
-    class_name = serializers.CharField(max_length=50)
+    lecture_name = serializers.CharField(max_length=50)
     credit = serializers.IntegerField()
 
-    class KhuclassSerializer(serializers.Serializer):
+    class LectureSerializer(serializers.Serializer):
         class Meta:
-            model = Khuclass
-            fields = ['id','class_name','credit','students']
+            model = Lecture
+            fields = ['id','lecture_name','credit','students']
