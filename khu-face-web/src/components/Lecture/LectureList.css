@@ -1,0 +1,18 @@
+.lecture-list{
+    background-color: royalblue;
+    height: 85px;
+}
+
+.lecture-ul{
+    padding: 5px 50px;
+}
+.lecture-li{
+    color: white;
+    margin: 5px 0;
+    padding: 5px 0;
+}
+
+.lecture-nav{
+    text-decoration: none;
+    color: white;
+}

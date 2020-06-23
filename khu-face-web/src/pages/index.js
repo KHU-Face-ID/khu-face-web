@@ -1,8 +1,5 @@
 export { default as Dashboard } from './Dashboard';
 export { default as About } from './About';
-export { default as Todo } from './Todo';
-export { default as Posts } from './Posts';
-export { default as Post } from './Post';
 export { default as Lecture } from './Lecture';
 export { default as Room } from './Room';
 export { default as Info } from './Info';

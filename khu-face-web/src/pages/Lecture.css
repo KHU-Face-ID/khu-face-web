@@ -1,0 +1,13 @@
+.lecture-menu{
+    display: inline-block;
+    width: 100%;
+}
+
+.lecture-menu-nav{
+    text-decoration: none;
+    color: black;
+}
+
+.lecture-contents{
+    margin: 0 10px;
+}

@@ -82,73 +82,6 @@ def logout(request):
         del request.session['prof']
     return redirect('/')
 
-class FrameView(View):
-    # def post(self, request):
-    #     ip=request.POST.get('ip')
-    #     URL='ip'+'/shot.jpg'
-    #     data={'ip':URL}
-    #     REQUEST_URL=''
-    #     request.post(REQUEST_URL, data=data)
-
-    def get(self, request, class_id):
-        '''
-        input=>화면에서 인식되는 학생들의 id, location
-        front=>location의 위치에 boxing, box에 id 데이터 저장
-        '''
-        location_data=[
-            {
-                'id': '0', 
-                'x1': 235.2441840171814, 
-                'y1': 50.16988945007324, 
-                'x2': 283.1888146996498, 
-                'y2': 104.56735932826996
-            },
-            {
-                'id': '1', 
-                'x1': 105.24182361364365, 
-                'y1': 195.83100248873234, 
-                'x2': 143.543091237545, 
-                'y2': 240.43386733531952
-            },
-        ]
-        return JsonResponse({'frame': location_data}, status=200)
-
-    def post(self, request, class_id):
-        '''
-        input=>사용자가 클릭한 위치의 좌표
-        (example)
-        request={
-            0: {
-                'id': 'DH', 
-                'x1': 235.2441840171814, 
-                'y1': 50.16988945007324, 
-                'x2': 283.1888146996498, 
-                'y2': 104.56735932826996
-                }, 
-            1: {
-                'id': 'HS', 
-                'x1': 105.24182361364365, 
-                'y1': 195.83100248873234, 
-                'x2': 143.543091237545, 
-                'y2': 240.43386733531952
-                }
-        }
-        
-        output=>해당 위치에 있는 사용자의 정보
-        '''
-
-        # khuclass_name = Khuclass.objects.get(pk=class_id).class_name
-        # students = Khuclass.objects.values('class_name', 'students')
-
-        # student_in_class = []
-        # for student in students:
-        #     if student['class_name']==khuclass_name:
-        #         student_in_class.append(student['students'])
-
-        student = Student.objects.get(pk=request.POST.get('id'))
-        student_json = StudentSerialzer(student).data
-        return JsonResponse(student_json)
-
 class LectureListView(generics.ListAPIView):
     queryset = Lecture.objects.all()
     serializer_class = LectureSerializer
@@ -165,12 +98,21 @@ class LectureListView(generics.ListAPIView):
 
         return Response(serializer.data)
 
-def camera(request):
-    return render(request, "camera.html")
+class StudentView(generics.GenericAPIView):
+    def get(self, request, class_id, student_id):
+        student = Lecture.objects.get(pk=class_id).students.get(pk=student_id)
+        serializer = StudentSerializer(student)
+        return JsonResponse({"student": serializer.data})
 
-class LectureIPView(generics.GenericAPIView):
+class LectureView(generics.GenericAPIView):
     def get(self, request, class_id):
         lecture = Lecture.objects.get(pk=class_id)
-        
-    def post(self, request, class_id):
+        serializer = LectureSerializer(lecture)
+        return JsonResponse({"lecture": serializer.data})
+
+class LectureStudentListView(generics.ListAPIView):
+    def list(self, request, class_id):
         lecture = Lecture.objects.get(pk=class_id)
+        student_list = lecture.students.all()
+        serializer = StudentSerializer(student_list, many=True)
+        return JsonResponse({"students": serializer.data})

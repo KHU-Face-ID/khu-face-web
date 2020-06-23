@@ -1,6 +1,7 @@
-import React, { useEffect, useReducer, Fragment } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios'
+import './LectureList.css'
 
 function reducer(state, action){
     switch (action.type){
@@ -56,14 +57,13 @@ function LectureList(){
     if (error) return <div>에러가 발생했습니다</div>;
     if (!lectures) return null;
     return (
-        <Fragment>
-            <ul>
+        <div className="lecture-list">
+            <ul className="lecture-ul">
                 {lectures.map(lecture => (
-                    <li key={lecture.id}><NavLink to={`/lecture/${lecture.id}`}>{lecture.lecture_name}</NavLink></li>
+                    <li className="lecture-li" key={lecture.id}><NavLink className="lecture-nav" to={`/lecture/${lecture.id}`}>{lecture.lecture_name}</NavLink></li>
                 ))}
             </ul>
-            <button onClick={fetchLectures}>다시 불러오기</button>
-        </Fragment>
+        </div>
     );
 }
 

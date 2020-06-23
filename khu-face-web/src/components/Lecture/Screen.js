@@ -1,35 +1,43 @@
-import React from 'react';
-import { Route } from 'react-router-dom';
+import React, { Fragment, useState } from 'react';
+import axios from 'axios'
 import './Screen.css'
 
-const Screen = ({ class_id, ip, boxToggleOn, box, currentStudents }) => {
-    console.log("Screen now!")
-    console.log(box)
-    console.log(currentStudents)
+const Screen = ({ lecture_id, ip, boxToggleOn, box}) => {
+    const [ student, setStudent ] = useState(null);
 
-    const frame = () => {
+    const getStudent = (student_id) => {
+        axios.get('http://121.135.128.15:8000/dashboard/lecture/'+lecture_id+'/'+student_id+'/')
+            .then( response => {
+                setStudent({student:response.data.student});
+                console.log("box student!");
+                console.log(student);
+            }).catch(function (error){
+                // console.log(error);
+            });
+    }
+
+    const showStudent = (student) => {
+        if(student == null){
+            return null
+        } else {
+            return (
+                <div>{student['name']}</div>
+            )
+        }
+    }
+
+    const showFrame = () => {
         try {
             return box.map(frame => {
-                return <button key={frame.id} type="button"
+                return <button
+                            key={frame.id} type="button"
                             className={"button " + ( boxToggleOn ? null : 'ghost')}
-                            style={{ left: "25px", top: "30px", width: "50px", height: "50px" }}>
+                            onClick={() => getStudent(parseInt(frame.id)+1)}
+                            style={{ left: frame.x1*(700/1920), top: frame.y1*(400/1080),
+                                    width: (frame.x2-frame.x1)*(700/1920), height: (frame.y2-frame.y1)*(400/1080) }}>
                         </button>
             })
-                // <ul>
-                //     {box.map(frame => (
-                //         <li key={frame.id}>{frame.id} {frame.x1} {frame.y1} {frame.x2} {frame.y2}</li>
-                //     ))}
-                // </ul>
-                // <div>
-                //     {box.map(frame => (
-                //         <button key={frame.id} type="button"
-                //             className={"button " + ( boxToggleOn ? null : 'ghost')}
-                //             style={{ left: "25px", top: "30px", width: "50px", height: "50px" }}>
-                //         </button>
-                //     ))}
-                // </div>
         } catch (e) {
-            console.log(e);
             return (
                 null
             )
@@ -38,18 +46,14 @@ const Screen = ({ class_id, ip, boxToggleOn, box, currentStudents }) => {
 
     return (
         <div>
-            <div>{ip}</div>
-            <div>{frame({box})}</div>
+            <div>
+                <div>선택한 학생!</div>
+                <div>{showStudent(student)}</div>
+            </div>
             <div className="screen">
                 <img className="screen-video" src={`http://${ip}/video`} alt="수업 중이 아닙니다."></img>
-                {/* <button type="button"
-                    className={"button " + ( boxToggleOn ? null : 'ghost')}
-                    style={{ left: "25px", top: "30px", width: "50px", height: "50px" }}>
-                </button> */}
+                <Fragment>{showFrame({box})}</Fragment>
                 <iframe title="settings" className="screen-video" src={`http://${ip}/settings_window.html`} frameBorder="0"/>
-            </div>
-            <div>
-                <Route></Route>
             </div>
         </div>
     )

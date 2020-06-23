@@ -19,8 +19,6 @@ class Lecture(models.Model):
     lecture_name = models.CharField(max_length=50)
     credit = models.IntegerField()
     students = models.ManyToManyField('Student', blank=True)
-    ip = models.CharField(max_length=100, blank=True)
-    frame = jsonfield.JSONField()
 
     def __str__(self):
         return self.lecture_name

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from khu_class.models import Student, Professor, Lecture
 
-class StudentSerialzer(serializers.Serializer):
+class StudentSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=20)
     department = serializers.CharField(max_length=30)

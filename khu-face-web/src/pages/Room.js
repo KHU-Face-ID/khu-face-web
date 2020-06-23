@@ -6,14 +6,17 @@ import StudentInfo from 'components/Lecture/StudentInfo';
 class Room extends Component{
 
     state={
-        class_id : this.props.match.params.id,
+        lecture_id : this.props.match.params.id,
         ip : "",
         boxToggleOn : false,
         screenToggleOn : false,
-        //학생 명단 <- django
+        //수업 정보
+        lectureInfo : {
+        },
+        //학생 명단(id and info) <- django
         students : {
         },
-        //출석 명단 <- model at
+        //출석 명단(id) <- model at
         currentStudents : {
         },
         //box <- model fr
@@ -46,30 +49,57 @@ class Room extends Component{
         }));
     }
 
+    getLectureInfo = () => {
+        const self = this;
+        axios.get('http://121.135.128.15:8000/dashboard/lecture/'+this.state.lecture_id+'/')
+            .then( response => {
+                self.setState({
+                    lectureInfo:response.data.lecture
+                });
+                // console.log(self.state.lectureInfo);
+            }).catch(function (error){
+                // console.log(error);
+            });
+    }
+
+    getStudent = () => {
+        const self = this;
+        axios.get('http://121.135.128.15:8000/dashboard/lecture/'+this.state.lecture_id+'/students/')
+            .then( response => {
+                self.setState({
+                    students:response.data.students
+                });
+                // console.log(self.state.students);
+            }).catch(function (error){
+                // console.log(error);
+            });
+    }
 
     getBox = () => {
         const self = this;
-        axios.get('http://34.80.62.248:1219/modelfr?ip=http://218.209.85.168:2020/shot.jpg')
+        // http://34.80.62.248:1219/modelfr?ip=http://218.209.85.168:2020/shot.jpg
+        // http://34.80.62.248:1121/modelat?ip=http://121.135.128.15:2021/shot.jpg
+        axios.get('http://35.201.192.108:1219/modelfr?ip=http://121.135.128.15:2021/shot.jpg')
             .then( response => {
                 self.setState({
                     box:response.data.box
                 });
-                console.log(self.state.box);
+                // console.log(self.state.box);
             }).catch(function (error){
-                console.log(error);
+                // console.log(error);
             });
     }
 
     getCurrentStudent = () => {
         const self = this;
-        axios.get('http://34.80.62.248:1121/modelat?ip=http://218.209.85.168:2020/shot.jpg')
+        axios.get('http://35.201.192.108:1121/modelat?ip=http://121.135.128.15:2021/shot.jpg')
             .then( response => {
                 self.setState({
                     currentStudents:response.data.id
                 });
-                console.log(self.state.currentStudents);
+                // console.log(self.state.currentStudents);
             }).catch(function (error){
-                console.log(error);
+                // console.log(error);
             });
     }
 
@@ -81,17 +111,31 @@ class Room extends Component{
         } else {
             return (
                 <Screen
-                    class_id={this.state.class_id}
+                    lecture_id={this.state.lecture_id}
                     ip={this.state.ip}
                     boxToggleOn={this.state.boxToggleOn}
-                    box={this.state.box}
-                    currentStudents={this.state.currentStudents}/>
+                    box={this.state.box}/>
             )
         }
     }
 
+    UNSAFE_componentWillMount() {
+        this.getLectureInfo();
+        this.getStudent();
+    }
+
+    UNSAFE_componentDidMount() {
+        this.getBox();
+    }
+
     render(){
-        const { class_id, ip, boxToggleOn } = this.state;
+        const {
+            boxToggleOn,
+            lectureInfo,
+            students,
+            currentStudents,
+        } = this.state;
+
         const {
             handleSubmit,
             handleBoxToggle,
@@ -103,7 +147,12 @@ class Room extends Component{
 
         return (
             <div>
-                수업 {class_id}, {ip}
+                {getBox()}
+                <p className="classname">{lectureInfo['lecture_name']}</p>
+                <div className="attendance-list">
+                    <p>--- 출석 명단 ---</p>
+                    <StudentInfo students={students} currentStudents={currentStudents}/>
+                </div>
                 <div>
                     <form onSubmit={handleSubmit}>
                         <label>
@@ -111,8 +160,7 @@ class Room extends Component{
                         </label>
                         <button onClick={handleScreenToggle} type="submit">{this.state.screenToggleOn ? '수업 끝' : '수업 시작'}</button>
                     </form>
-                    <button onClick={getBox}>modelfr</button>
-                    <button onClick={getCurrentStudent}>modelat</button>
+                    <button onClick={getCurrentStudent}>출석체크</button>
                     <label>
                         <input type="checkbox" checked={boxToggleOn} onChange={handleBoxToggle}></input>
                         show box
@@ -120,9 +168,6 @@ class Room extends Component{
                 </div>
                 <div>
                     {validIp()}
-                </div>
-                <div>
-                    <StudentInfo/>
                 </div>
             </div>
         );

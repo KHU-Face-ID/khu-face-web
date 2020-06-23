@@ -7,14 +7,14 @@ class App extends Component {
   
   render(){
     return (
-      <div>
-        <Menu/>
-        <Fragment>
+      <div className="body">
+        <Menu className="menu"/>
+        <div className="contents">
           <Route path="/about" component={About}/>
           <Route exact path="/" component={Dashboard}/>
           <Route path="/dashboard" component={Dashboard}/>
-          <Route path="/lecture/:id" component={Lecture}/>
-        </Fragment>
+          <Route className="lecture" path="/lecture/:id" component={Lecture}/>
+        </div>
       </div>
     )
   }
